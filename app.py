@@ -1,45 +1,44 @@
-from flask import Flask, render_template, request, redirect, send_file
-from openpyxl import Workbook
+from flask import Flask, render_template, request, send_file
+import pandas as pd
 import os
 from datetime import datetime
 
 app = Flask(__name__)
-excel_file = "بيانات_الطلاب.xlsx"
 
-@app.route('/')
+DATA_FILE = "students_data.xlsx"
+
+@app.route("/")
 def index():
-    return render_template('form.html')
+    return render_template("index.html")
 
-@app.route('/submit', methods=['POST'])
+@app.route("/submit", methods=["POST"])
 def submit():
-    name = request.form['student_name']
-    guardian = request.form['guardian_name']
-    birth_date = request.form['birth_date']
-    card_number = request.form['card_number']
-    phone = request.form['guardian_phone']
-    bank = request.form['bank_name']
+    student_name = request.form["student_name"]
+    guardian_name = request.form["guardian_name"]
+    birth_date = request.form["birth_date"]
+    card_number = request.form["card_number"]
+    phone_number = request.form["phone_number"]
+    bank_name = request.form["bank_name"]
 
-    if not os.path.exists(excel_file):
-        wb = Workbook()
-        ws = wb.active
-        ws.append(["الاسم الثلاثي", "اسم ولي الأمر", "تاريخ الميلاد", "رقم بطاقة السكن", "هاتف ولي الأمر", "اسم المصرف"])
-        wb.save(excel_file)
+    new_data = {
+        "اسم الطالب": student_name,
+        "اسم ولي الأمر": guardian_name,
+        "تاريخ الميلاد": birth_date,
+        "رقم بطاقة السكن": card_number,
+        "رقم هاتف ولي الأمر": phone_number,
+        "اسم المصرف": bank_name,
+        "تاريخ الإضافة": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
 
-    from openpyxl import load_workbook
-    wb = load_workbook(excel_file)
-    ws = wb.active
-    ws.append([name, guardian, birth_date, card_number, phone, bank])
-    wb.save(excel_file)
+    if os.path.exists(DATA_FILE):
+        df = pd.read_excel(DATA_FILE)
+        df = df.append(new_data, ignore_index=True)
+    else:
+        df = pd.DataFrame([new_data])
 
-    return redirect('/success')
+    df.to_excel(DATA_FILE, index=False)
 
-@app.route('/success')
-def success():
-    return render_template('success.html')
+    return send_file(DATA_FILE, as_attachment=True)
 
-@app.route('/download')
-def download():
-    return send_file(excel_file, as_attachment=True)
-
-if __name__ == '__main__':
-    app.run()
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
