@@ -1,32 +1,45 @@
-from flask import Flask, render_template, request
-import openpyxl
+from flask import Flask, render_template, request, redirect, send_file
+from openpyxl import Workbook
 import os
+from datetime import datetime
 
 app = Flask(__name__)
+excel_file = "بيانات_الطلاب.xlsx"
 
-EXCEL_FILE = "students.xlsx"
-
-@app.route("/", methods=["GET", "POST"])
+@app.route('/')
 def index():
-    if request.method == "POST":
-        name = request.form["name"]
-        parent_name = request.form["parent_name"]
-        dob = request.form["dob"]
-        card_number = request.form["card_number"]
-        phone = request.form["phone"]
-        bank_name = request.form["bank_name"]
+    return render_template('form.html')
 
-        if not os.path.exists(EXCEL_FILE):
-            wb = openpyxl.Workbook()
-            ws = wb.active
-            ws.append(["اسم الطالب", "اسم ولي الأمر", "تاريخ الميلاد", "رقم بطاقة السكن", "رقم الهاتف", "اسم المصرف"])
-            wb.save(EXCEL_FILE)
+@app.route('/submit', methods=['POST'])
+def submit():
+    name = request.form['student_name']
+    guardian = request.form['guardian_name']
+    birth_date = request.form['birth_date']
+    card_number = request.form['card_number']
+    phone = request.form['guardian_phone']
+    bank = request.form['bank_name']
 
-        wb = openpyxl.load_workbook(EXCEL_FILE)
+    if not os.path.exists(excel_file):
+        wb = Workbook()
         ws = wb.active
-        ws.append([name, parent_name, dob, card_number, phone, bank_name])
-        wb.save(EXCEL_FILE)
+        ws.append(["الاسم الثلاثي", "اسم ولي الأمر", "تاريخ الميلاد", "رقم بطاقة السكن", "هاتف ولي الأمر", "اسم المصرف"])
+        wb.save(excel_file)
 
-        return "تم حفظ المعلومات بنجاح ✅"
+    from openpyxl import load_workbook
+    wb = load_workbook(excel_file)
+    ws = wb.active
+    ws.append([name, guardian, birth_date, card_number, phone, bank])
+    wb.save(excel_file)
 
-    return render_template("form.html")
+    return redirect('/success')
+
+@app.route('/success')
+def success():
+    return render_template('success.html')
+
+@app.route('/download')
+def download():
+    return send_file(excel_file, as_attachment=True)
+
+if __name__ == '__main__':
+    app.run()
