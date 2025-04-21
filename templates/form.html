@@ -1,29 +1,35 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>استمارة معلومات الطالب</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; direction: rtl; background-color: #f0f0f0; text-align: center; padding: 40px; }
-        form { background: white; padding: 20px; border-radius: 10px; width: 400px; margin: auto; box-shadow: 0 0 10px #ccc; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #aaa; }
-        button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-        footer { margin-top: 30px; font-size: 14px; color: #555; }
-    </style>
+    <title>تسجيل الطالب - ثانوية النبلاء</title>
 </head>
 <body>
-    <h2>استمارة معلومات الطالب</h2>
-    <form method="post">
-        <input type="text" name="name" placeholder="الاسم الثلاثي للطالب" required>
-        <input type="text" name="parent_name" placeholder="اسم ولي الأمر" required>
-        <input type="date" name="dob" required>
-        <input type="text" name="card_number" placeholder="رقم بطاقة السكن" required>
-        <input type="text" name="phone" placeholder="رقم هاتف ولي الأمر" required>
-        <input type="text" name="bank_name" placeholder="اسم المصرف" required>
+    <h1>استمارة تسجيل الطالب</h1>
+    <form action="/submit" method="post">
+        <label>الاسم الثلاثي:</label><br>
+        <input type="text" name="student_name" required><br><br>
+
+        <label>اسم ولي الأمر:</label><br>
+        <input type="text" name="guardian_name" required><br><br>
+
+        <label>تاريخ الميلاد:</label><br>
+        <input type="date" name="birth_date" required><br><br>
+
+        <label>رقم بطاقة السكن:</label><br>
+        <input type="text" name="card_number" required><br><br>
+
+        <label>رقم هاتف ولي الأمر:</label><br>
+        <input type="text" name="guardian_phone" required><br><br>
+
+        <label>اسم المصرف:</label><br>
+        <input type="text" name="bank_name" required><br><br>
+
         <button type="submit">إرسال</button>
     </form>
+    <br>
     <footer>
-        بإشراف: د. أحمد المالكي - ثانوية النبلاء النموذجية
+        <p>بإشراف: د. أحمد المالكي - ثانوية النبلاء</p>
     </footer>
 </body>
 </html>
